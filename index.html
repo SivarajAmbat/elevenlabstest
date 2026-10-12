@@ -122,7 +122,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 18px;
     }
 
@@ -417,7 +417,7 @@
     <section class="grid">
 
       <div class="panel">
-        <div class="panel-title">01 / AGENT STATUS</div>
+        <div class="panel-title">AGENT STATUS</div>
 
         <div class="visualizer">
           <div class="orb" id="orb">
@@ -429,12 +429,6 @@
           </div>
         </div>
       </div>
-
-      <div class="panel">
-        <div class="panel-title">02 / VOICE CONNECTION</div>
-
-        <div class="embed-area">
-          <div class="embed-label">ELEVENLABS AGENT</div>
 
           <!-- =========================================
                ELEVENLABS EMBED START
@@ -452,49 +446,13 @@
           <!-- =========================================
                ELEVENLABS EMBED END
                ========================================= -->
-        </div>
-      </div>
-
-      <div class="panel chat">
-        <div class="panel-title">03 / CONVERSATION TEST LOG</div>
-
-        <div class="messages" id="messages" aria-live="polite">
-          <div class="system">
-            — SESSION INITIALIZED —
-          </div>
-
-          <div class="message assistant">
-            <small>JARVIS // SYSTEM</small>
-            Voice test console is ready. Connect the ElevenLabs
-            agent above to begin testing.
-          </div>
-        </div>
-
-        <form class="composer" id="testForm">
-          <input
-            id="testInput"
-            type="text"
-            placeholder="Type a test prompt for your log..."
-            autocomplete="off"
-            aria-label="Test prompt"
-          >
-          <button type="submit">LOG PROMPT</button>
-        </form>
-
-        <div class="tools">
-          <span class="hint">
-            Manual prompts are logged locally in this page.
-          </span>
-          <button class="secondary" id="clearBtn" type="button">
-            CLEAR LOG
-          </button>
-        </div>
-      </div>
+ 
 
     </section>
 
     <footer>
-      JARVIS INTERFACE // ALL SYSTEMS STANDING BY
+      CREATED BY J.A.R.V.I.S. — THE CREATOR IS HIDING IN THE NAME
+      
     </footer>
 
   </main>
