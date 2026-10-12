@@ -1,0 +1,572 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS | Voice Agent Console</title>
+
+  <style>
+    :root {
+      --bg: #070b12;
+      --panel: #0d1521;
+      --border: #1b3446;
+      --cyan: #4de8ff;
+      --blue: #3985ff;
+      --green: #45f5b2;
+      --text: #e6f6ff;
+      --muted: #7f9aab;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% 0%, #102b42 0%, transparent 48%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--cyan);
+      border-radius: 12px;
+      color: var(--cyan);
+      font-size: 24px;
+      box-shadow: 0 0 22px #4de8ff20;
+    }
+
+    h1 {
+      font-size: 23px;
+      letter-spacing: 5px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-top: 5px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+      color: var(--green);
+      letter-spacing: 1px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 35px 0 25px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 11px;
+      letter-spacing: 4px;
+      margin-bottom: 12px;
+    }
+
+    .hero h2 {
+      font-size: clamp(25px, 5vw, 39px);
+      letter-spacing: 2px;
+    }
+
+    .hero p {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: linear-gradient(145deg, #101d2b, #0a111b);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 22px;
+      min-width: 0;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      margin-bottom: 18px;
+    }
+
+    .visualizer {
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .orb {
+      width: 118px;
+      height: 118px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid #4de8ff90;
+      background: radial-gradient(circle, #19445b, #0a1725 70%);
+      box-shadow: 0 0 35px #4de8ff18,
+                  inset 0 0 25px #4de8ff20;
+      position: relative;
+    }
+
+    .orb::before,
+    .orb::after {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      border: 1px solid #4de8ff35;
+      border-radius: 50%;
+    }
+
+    .orb::after {
+      inset: -20px;
+      border-color: #4de8ff18;
+    }
+
+    .orb span {
+      font-size: 35px;
+      color: var(--cyan);
+    }
+
+    .orb.active {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 25px #4de8ff25;
+      }
+      50% {
+        box-shadow: 0 0 50px #4de8ff70;
+      }
+    }
+
+    .agent-state {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .embed-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 150px;
+      padding: 18px;
+      border: 1px dashed #31566a;
+      border-radius: 10px;
+      background: #080f18;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .embed-area p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .embed-label {
+      color: var(--cyan);
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+
+    .chat {
+      grid-column: 1 / -1;
+    }
+
+    .messages {
+      height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 4px 2px 14px;
+      margin-bottom: 14px;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 12px 15px;
+      border-radius: 11px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .system {
+      align-self: center;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #12334a;
+      border: 1px solid #22516c;
+    }
+
+    .assistant {
+      align-self: flex-start;
+      background: #101b27;
+      border: 1px solid #223747;
+    }
+
+    .message small {
+      display: block;
+      color: var(--cyan);
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .composer {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      background: #070d15;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 14px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--cyan);
+    }
+
+    button {
+      background: linear-gradient(135deg, #35cce8, #3985ff);
+      border: none;
+      border-radius: 9px;
+      padding: 0 23px;
+      color: #04101a;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    button:hover {
+      opacity: .85;
+    }
+
+    button:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 3px;
+    }
+
+    .secondary {
+      padding: 10px 14px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-size: 11px;
+    }
+
+    .tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    footer {
+      text-align: center;
+      color: #526b7c;
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 28px;
+      padding: 18px 0;
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chat {
+        grid-column: auto;
+      }
+
+      header {
+        align-items: flex-start;
+      }
+
+      h1 {
+        font-size: 19px;
+      }
+
+      .status {
+        font-size: 10px;
+      }
+
+      .panel {
+        padding: 17px;
+      }
+
+      .composer button {
+        padding: 0 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+
+    <header>
+      <div class="brand">
+        <div class="logo">J</div>
+        <div>
+          <h1>J.A.R.V.I.S.</h1>
+          <div class="subtitle">VOICE INTERFACE // V1.0</div>
+        </div>
+      </div>
+
+      <div class="status">
+        <span class="dot"></span>
+        <span id="connectionStatus">TEST CONSOLE READY</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">PERSONAL AI ASSISTANT</div>
+      <h2>At Your Service.</h2>
+      <p>
+        Initialize your voice agent, test conversations, and evaluate
+        Jarvis's responses in real time.
+      </p>
+    </section>
+
+    <section class="grid">
+
+      <div class="panel">
+        <div class="panel-title">01 / AGENT STATUS</div>
+
+        <div class="visualizer">
+          <div class="orb" id="orb">
+            <span>J</span>
+          </div>
+
+          <div class="agent-state" id="agentState">
+            AWAITING INITIALIZATION
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">02 / VOICE CONNECTION</div>
+
+        <div class="embed-area">
+          <div class="embed-label">ELEVENLABS AGENT</div>
+
+          <!-- =========================================
+               ELEVENLABS EMBED START
+               Paste your ElevenLabs widget/script here.
+               Example widget scripts may include:
+               <elevenlabs-convai agent-id="YOUR_AGENT_ID">
+               </elevenlabs-convai>
+               <script src="YOUR_ELEVENLABS_WIDGET_SCRIPT"></script>
+               ========================================= -->
+
+ 
+
+<elevenlabs-convai agent-id="agent_2201m4rm9zswfk4r1n32mhvhpwhm"></elevenlabs-convai><script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+          <!-- =========================================
+               ELEVENLABS EMBED END
+               ========================================= -->
+        </div>
+      </div>
+
+      <div class="panel chat">
+        <div class="panel-title">03 / CONVERSATION TEST LOG</div>
+
+        <div class="messages" id="messages" aria-live="polite">
+          <div class="system">
+            — SESSION INITIALIZED —
+          </div>
+
+          <div class="message assistant">
+            <small>JARVIS // SYSTEM</small>
+            Voice test console is ready. Connect the ElevenLabs
+            agent above to begin testing.
+          </div>
+        </div>
+
+        <form class="composer" id="testForm">
+          <input
+            id="testInput"
+            type="text"
+            placeholder="Type a test prompt for your log..."
+            autocomplete="off"
+            aria-label="Test prompt"
+          >
+          <button type="submit">LOG PROMPT</button>
+        </form>
+
+        <div class="tools">
+          <span class="hint">
+            Manual prompts are logged locally in this page.
+          </span>
+          <button class="secondary" id="clearBtn" type="button">
+            CLEAR LOG
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <footer>
+      JARVIS INTERFACE // ALL SYSTEMS STANDING BY
+    </footer>
+
+  </main>
+
+  <script>
+    const form = document.getElementById("testForm");
+    const input = document.getElementById("testInput");
+    const messages = document.getElementById("messages");
+    const clearBtn = document.getElementById("clearBtn");
+    const orb = document.getElementById("orb");
+    const agentState = document.getElementById("agentState");
+
+    // Local test log only. This does not send prompts to ElevenLabs.
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      addMessage("YOU", prompt, "user");
+      input.value = "";
+      input.focus();
+    });
+
+    function addMessage(label, text, className) {
+      const message = document.createElement("div");
+      message.className = "message " + className;
+
+      const heading = document.createElement("small");
+      heading.textContent = label + " // " + new Date()
+        .toLocaleTimeString();
+
+      const body = document.createElement("div");
+      body.textContent = text;
+
+      message.append(heading, body);
+      messages.appendChild(message);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    clearBtn.addEventListener("click", function () {
+      messages.replaceChildren();
+
+      const notice = document.createElement("div");
+      notice.className = "system";
+      notice.textContent = "— LOG CLEARED —";
+
+      messages.appendChild(notice);
+    });
+
+    // Optional visual controls for your own integration.
+    // Call setAgentState("LISTENING") or
+    // setAgentState("SPEAKING") from your agent event handlers.
+    function setAgentState(state) {
+      const normalized = String(state).toUpperCase();
+
+      agentState.textContent = normalized;
+      orb.classList.toggle(
+        "active",
+        ["LISTENING", "SPEAKING", "THINKING"].includes(normalized)
+      );
+    }
+
+    // Expose a small helper for integration callbacks.
+    window.jarvisTestConsole = {
+      setAgentState,
+      addAgentMessage: function (text) {
+        addMessage("JARVIS", text, "assistant");
+      }
+    };
+  </script>
+</body>
+</html>
+
+
